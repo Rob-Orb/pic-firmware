@@ -61,11 +61,11 @@
     // PWM1POL active_hi; PWM1OE enabled; PWM1EN enabled; 
     PWM1CON = 0xC0;   
 
-    // PWM1DCH 6; 
-    PWM1DCH = 0x06;   
+    // PWM1DCH 0; 
+    PWM1DCH = 0x00;   
 
-    // PWM1DCL 1; 
-    PWM1DCL = 0x40;   
+    // PWM1DCL 0; 
+    PWM1DCL = 0x00;   
 
  }
 

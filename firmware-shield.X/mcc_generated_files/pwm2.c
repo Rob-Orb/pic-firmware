@@ -61,11 +61,11 @@
     // PWM2POL active_hi; PWM2OE enabled; PWM2EN enabled; 
     PWM2CON = 0xC0;   
 
-    // PWM2DCH 6; 
-    PWM2DCH = 0x06;   
+    // PWM2DCH 199; 
+    PWM2DCH = 0xC7;   
 
-    // PWM2DCL 1; 
-    PWM2DCL = 0x40;   
+    // PWM2DCL 3; 
+    PWM2DCL = 0xC0;   
 
  }
 

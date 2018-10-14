@@ -42,6 +42,7 @@
 */
 
 #include "mcc_generated_files/mcc.h"
+#include "config.h"
 
 /*
                          Main application
@@ -55,10 +56,10 @@ void main(void)
     // Use the following macros to:
 
     // Enable the Global Interrupts
-    //INTERRUPT_GlobalInterruptEnable();
+    INTERRUPT_GlobalInterruptEnable();
 
     // Enable the Peripheral Interrupts
-    //INTERRUPT_PeripheralInterruptEnable();
+    INTERRUPT_PeripheralInterruptEnable();
 
     // Disable the Global Interrupts
     //INTERRUPT_GlobalInterruptDisable();
@@ -66,8 +67,15 @@ void main(void)
     // Disable the Peripheral Interrupts
     //INTERRUPT_PeripheralInterruptDisable();
 
+    uint16_t duty = 0;
     while (1)
     {
+        //__delay_us(1000000);
+        //PWM1_LoadDutyValue(0);
+        //IO_RC4_SetLow();
+        //__delay_us(1000000);
+        //PWM1_LoadDutyValue(100);
+        //IO_RC4_SetHigh();
         // Add your application code
     }
 }

@@ -56,7 +56,6 @@ void SYSTEM_Initialize(void)
     I2C_Initialize();
     PWM1_Initialize();
     PWM2_Initialize();
-    ADC_Initialize();
     PWM4_Initialize();
     PWM3_Initialize();
     TMR2_Initialize();
@@ -64,8 +63,8 @@ void SYSTEM_Initialize(void)
 
 void OSCILLATOR_Initialize(void)
 {
-    // SCS FOSC; IRCF 1MHz_HF; 
-    OSCCON = 0x58;
+    // SCS FOSC; IRCF 16MHz_HF; 
+    OSCCON = 0x78;
     // SBOREN disabled; BORFS disabled; 
     BORCON = 0x00;
 }
