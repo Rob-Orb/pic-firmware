@@ -49,6 +49,9 @@
 #include "../config.h"
 #include "pwm1.h"
 #include "pwm2.h"
+#include "pwm3.h"
+#include "pwm4.h"
+#include "tmr1.h"
 
 #define I2C_SLAVE_ADDRESS 0x08 
 #define I2C_SLAVE_MASK    0x7F
@@ -168,6 +171,36 @@ void I2C_ISR ( void )
     continue from the start of the EEPROM.
 */
 uint8_t motorCurrent = 0;
+uint8_t motorPwm = 0;
+uint8_t motorEncoder = 0;
+uint8_t encoderAdd = 0;
+
+void I2C_updateValues(){
+    switch(motorCurrent){
+        case 1:
+            PWM1_LoadDutyValue(motorPwm*3);
+            break;
+        case 2:
+            PWM2_LoadDutyValue(motorPwm*3);
+            break;
+        case 3:
+            PWM3_LoadDutyValue(motorPwm*3);
+            break;
+        case 4:
+            PWM4_LoadDutyValue(motorPwm*3);
+            break;
+        default:
+        case 0:
+            PWM1_LoadDutyValue(motorPwm*3);
+            PWM2_LoadDutyValue(motorPwm*3);
+            PWM3_LoadDutyValue(motorPwm*3);
+            PWM4_LoadDutyValue(motorPwm*3);
+            break;
+    }
+    TMR1IF = 0;
+    TMR1_Reload();
+}
+
 void I2C_StatusCallback(I2C_SLAVE_DRIVER_STATUS i2c_bus_state)
 {
 
@@ -175,6 +208,7 @@ void I2C_StatusCallback(I2C_SLAVE_DRIVER_STATUS i2c_bus_state)
     static uint8_t slaveWriteType   = SLAVE_NORMAL_DATA;
     
     uint8_t data = 0;
+    uint8_t dataR = 0;
 
 
     switch (i2c_bus_state)
@@ -200,26 +234,17 @@ void I2C_StatusCallback(I2C_SLAVE_DRIVER_STATUS i2c_bus_state)
                     data    = I2C_slaveWriteData;
                     switch(funcAddress){
                         case I2C_FUNC_PWM:
-                            switch(motorCurrent){
-                                case 1:
-                                    PWM1_LoadDutyValue(data*3);
-                                    break;
-                                case 2:
-                                    PWM2_LoadDutyValue(data*3);
-                                    break;
-                                default:
-                                case 0:
-                                    PWM1_LoadDutyValue(data*3);
-                                    PWM2_LoadDutyValue(data*3);
-                                    break;
-                            }
+                            motorPwm = data;
                             break;
                         case I2C_FUNC_MOTOR:
-                            if(data < 3)
-                                motorCurrent = data;
+                            motorCurrent = data;
                             break;
-                        
+                        case I2C_FUNC_ENCODER:
+                            if(data < 2)
+                                motorEncoder = data;
+                            break;
                     }
+                    I2C_updateValues();
                     break;
 
             } // end switch(slaveWriteType)
@@ -228,7 +253,21 @@ void I2C_StatusCallback(I2C_SLAVE_DRIVER_STATUS i2c_bus_state)
             break;
 
         case I2C_SLAVE_READ_REQUEST:
-            SSP1BUF = 1;
+            if(encoderAdd > 0)
+                dataR = (encoderV >> 8) & 0x00ff;
+            else
+                dataR = (uint8_t)encoderV;
+                
+            switch(motorEncoder){
+                case 0:
+                    SSP1BUF = dataR;
+                    break;
+                case 1:
+                    SSP1BUF = dataR;
+                    break;
+            }
+            encoderAdd++;
+            encoderAdd%=2;
             break;
 
         case I2C_SLAVE_READ_COMPLETED:

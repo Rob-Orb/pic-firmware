@@ -31,13 +31,25 @@
 #ifndef ORB_CONFIG_H
 #define	ORB_CONFIG_H
 
+#include <stdint.h>
+
 //#include <xc.h> // include processor files - each processor file is guarded.
 
 #define I2C_FUNC_PWM    0x01
 #define I2C_FUNC_MOTOR     0x02
+#define I2C_FUNC_ENCODER     0x03
 
 
 extern uint8_t motorCurrent;
+extern uint8_t motorPwm;
+extern uint8_t motorEncoder;
+
+extern unsigned long A1;
+extern unsigned long A2;
+extern unsigned long B1;
+extern unsigned long B2;
+extern uint8_t encoderAdd;
+extern uint16_t encoderV;
 
 // TODO Insert appropriate #include <>
 

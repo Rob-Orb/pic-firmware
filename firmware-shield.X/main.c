@@ -66,8 +66,6 @@ void main(void)
 
     // Disable the Peripheral Interrupts
     //INTERRUPT_PeripheralInterruptDisable();
-
-    uint16_t duty = 0;
     while (1)
     {
         //__delay_us(1000000);

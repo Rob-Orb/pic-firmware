@@ -134,6 +134,7 @@ void I2C_Initialize(void);
  */
 
 void I2C_ISR ( void );
+void I2C_updateValues();
 
 /**
    @Summary
