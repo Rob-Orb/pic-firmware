@@ -52,8 +52,6 @@
 #include "tmr1.h"
 #include "pwm1.h"
 #include "pwm2.h"
-#include "pwm3.h"
-#include "pwm4.h"
 /**
   Section: Global Variables Definitions
 */
@@ -140,11 +138,16 @@ void TMR1_WriteTimer(uint16_t timerVal)
         TMR1H = (timerVal >> 8);
         TMR1L = timerVal;
     }
+    
 }
 
+uint8_t ticker_factor = TMR1_INTERRUPT_TICKER_FACTOR;
 void TMR1_Reload(void)
 {
     TMR1_WriteTimer(timer1ReloadVal);
+    static volatile unsigned int CountCallBack = 0;
+    CountCallBack = 0;
+    ticker_factor=TMR1_INTERRUPT_TICKER_FACTOR;
 }
 
 void TMR1_StartSinglePulseAcquisition(void)
@@ -157,6 +160,11 @@ uint8_t TMR1_CheckGateValueStatus(void)
     return (T1GCONbits.T1GVAL);
 }
 
+void TMR1_ChangeTicker(uint8_t val){
+    ticker_factor = val;
+    static volatile unsigned int CountCallBack = 0;
+    CountCallBack = 0;
+}
 void TMR1_ISR(void)
 {
     static volatile unsigned int CountCallBack = 0;
@@ -166,13 +174,14 @@ void TMR1_ISR(void)
     TMR1_WriteTimer(timer1ReloadVal);
 
     // callback function - called every 10th pass
-    if (++CountCallBack >= TMR1_INTERRUPT_TICKER_FACTOR)
+    if (++CountCallBack >= ticker_factor)
     {
         // ticker function call
         TMR1_CallBack();
 
         // reset ticker counter
         CountCallBack = 0;
+        ticker_factor = TMR1_INTERRUPT_TICKER_FACTOR;
     }
 }
 
@@ -194,8 +203,6 @@ void TMR1_DefaultInterruptHandler(void){
     // or set custom function using TMR1_SetInterruptHandler()
     PWM1_LoadDutyValue(0);
     PWM2_LoadDutyValue(0);
-    PWM3_LoadDutyValue(0);
-    PWM4_LoadDutyValue(0);
 }
 
 /**

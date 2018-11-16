@@ -59,7 +59,9 @@
     extern "C" {
 
 #endif
-
+        
+        
+extern uint8_t ticker_factor;
 #define TMR1_INTERRUPT_TICKER_FACTOR    10
 
 /**
@@ -365,6 +367,7 @@ uint8_t TMR1_CheckGateValueStatus(void);
   @Returns
     None
 */
+void TMR1_ChangeTicker(uint8_t val);
 void TMR1_ISR(void);
 /**
   @Summary

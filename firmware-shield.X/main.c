@@ -68,13 +68,7 @@ void main(void)
     //INTERRUPT_PeripheralInterruptDisable();
     while (1)
     {
-        //__delay_us(1000000);
-        //PWM1_LoadDutyValue(0);
-        //IO_RC4_SetLow();
-        //__delay_us(1000000);
-        //PWM1_LoadDutyValue(100);
-        //IO_RC4_SetHigh();
-        // Add your application code
+        
     }
 }
 /**

@@ -49,9 +49,8 @@
 #include "../config.h"
 #include "pwm1.h"
 #include "pwm2.h"
-#include "pwm3.h"
-#include "pwm4.h"
 #include "tmr1.h"
+#include "pin_manager.h"
 
 #define I2C_SLAVE_ADDRESS 0x08 
 #define I2C_SLAVE_MASK    0x7F
@@ -172,6 +171,7 @@ void I2C_ISR ( void )
 */
 uint8_t motorCurrent = 0;
 uint8_t motorPwm = 0;
+uint8_t motorDir = 0;
 uint8_t motorEncoder = 0;
 uint8_t encoderAdd = 0;
 
@@ -183,21 +183,28 @@ void I2C_updateValues(){
         case 2:
             PWM2_LoadDutyValue(motorPwm*3);
             break;
-        case 3:
-            PWM3_LoadDutyValue(motorPwm*3);
-            break;
-        case 4:
-            PWM4_LoadDutyValue(motorPwm*3);
-            break;
-        default:
         case 0:
+            break;
+        case 3:
+        default:
             PWM1_LoadDutyValue(motorPwm*3);
             PWM2_LoadDutyValue(motorPwm*3);
-            PWM3_LoadDutyValue(motorPwm*3);
-            PWM4_LoadDutyValue(motorPwm*3);
             break;
     }
-    TMR1IF = 0;
+    
+    if((motorDir >> 1) > 0){
+        if(motorDir & 0x01)
+            DIR1_SetHigh();
+        else
+            DIR1_SetLow();
+    }
+    if((motorDir >> 3) > 0){
+        if((motorDir & 0x04) >> 2)
+            DIR2_SetHigh();
+        else
+            DIR2_SetLow();
+    }
+    PIR1bits.TMR1IF = 0;
     TMR1_Reload();
 }
 
@@ -214,7 +221,6 @@ void I2C_StatusCallback(I2C_SLAVE_DRIVER_STATUS i2c_bus_state)
     switch (i2c_bus_state)
     {
         case I2C_SLAVE_WRITE_REQUEST:
-            // the master will be sending the eeprom address next
             slaveWriteType  = SLAVE_DATA_ADDRESS;
             break;
 
@@ -232,19 +238,21 @@ void I2C_StatusCallback(I2C_SLAVE_DRIVER_STATUS i2c_bus_state)
                 default:
                     // the master has written data to store in the eeprom
                     data    = I2C_slaveWriteData;
-                    switch(funcAddress){
-                        case I2C_FUNC_PWM:
-                            motorPwm = data;
+                    motorCurrent = funcAddress & 0x03;
+                    motorDir = (funcAddress & 0x3C) >> 2;
+                    switch((funcAddress & 0xC0) >> 6){
+                        case I2C_FUNC_TIME:
+                            TMR1_ChangeTicker(data);
                             break;
                         case I2C_FUNC_MOTOR:
-                            motorCurrent = data;
+                            motorPwm = data;
+                            I2C_updateValues();
                             break;
                         case I2C_FUNC_ENCODER:
                             if(data < 2)
                                 motorEncoder = data;
                             break;
                     }
-                    I2C_updateValues();
                     break;
 
             } // end switch(slaveWriteType)

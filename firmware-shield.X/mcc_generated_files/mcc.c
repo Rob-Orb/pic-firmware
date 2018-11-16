@@ -56,8 +56,6 @@ void SYSTEM_Initialize(void)
     I2C_Initialize();
     PWM1_Initialize();
     PWM2_Initialize();
-    PWM4_Initialize();
-    PWM3_Initialize();
     TMR2_Initialize();
     TMR1_Initialize();
 }

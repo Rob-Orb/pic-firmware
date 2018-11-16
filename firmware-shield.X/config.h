@@ -35,13 +35,14 @@
 
 //#include <xc.h> // include processor files - each processor file is guarded.
 
-#define I2C_FUNC_PWM    0x01
+#define I2C_FUNC_TIME    0x01
 #define I2C_FUNC_MOTOR     0x02
 #define I2C_FUNC_ENCODER     0x03
 
 
 extern uint8_t motorCurrent;
 extern uint8_t motorPwm;
+extern uint8_t motorDir;
 extern uint8_t motorEncoder;
 
 extern unsigned long A1;
