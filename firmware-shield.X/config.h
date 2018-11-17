@@ -44,6 +44,7 @@ extern uint8_t motorCurrent;
 extern uint8_t motorPwm;
 extern uint8_t motorDir;
 extern uint8_t motorEncoder;
+extern bool activateMotor;
 
 extern unsigned long A1;
 extern unsigned long A2;

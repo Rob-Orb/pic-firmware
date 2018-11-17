@@ -52,6 +52,7 @@
 #include "tmr1.h"
 #include "pwm1.h"
 #include "pwm2.h"
+#include "pin_manager.h"
 /**
   Section: Global Variables Definitions
 */
@@ -147,7 +148,6 @@ void TMR1_Reload(void)
     TMR1_WriteTimer(timer1ReloadVal);
     static volatile unsigned int CountCallBack = 0;
     CountCallBack = 0;
-    ticker_factor=TMR1_INTERRUPT_TICKER_FACTOR;
 }
 
 void TMR1_StartSinglePulseAcquisition(void)
@@ -203,6 +203,8 @@ void TMR1_DefaultInterruptHandler(void){
     // or set custom function using TMR1_SetInterruptHandler()
     PWM1_LoadDutyValue(0);
     PWM2_LoadDutyValue(0);
+    EN1_SetHigh();
+    EN2_SetHigh();
 }
 
 /**

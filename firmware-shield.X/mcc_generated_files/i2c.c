@@ -174,23 +174,29 @@ uint8_t motorPwm = 0;
 uint8_t motorDir = 0;
 uint8_t motorEncoder = 0;
 uint8_t encoderAdd = 0;
+bool activateMotor = false;
 
 void I2C_updateValues(){
     switch(motorCurrent){
         case 1:
+            EN1_SetLow();
             PWM1_LoadDutyValue(motorPwm*3);
             break;
         case 2:
+            EN2_SetLow();
             PWM2_LoadDutyValue(motorPwm*3);
             break;
         case 0:
             break;
         case 3:
         default:
+            EN1_SetLow();
+            EN2_SetLow();
             PWM1_LoadDutyValue(motorPwm*3);
             PWM2_LoadDutyValue(motorPwm*3);
             break;
     }
+    activateMotor = false;
     
     if((motorDir >> 1) > 0){
         if(motorDir & 0x01)
@@ -199,7 +205,7 @@ void I2C_updateValues(){
             DIR1_SetLow();
     }
     if((motorDir >> 3) > 0){
-        if((motorDir & 0x04) >> 2)
+        if((motorDir >> 2)  & 0x01)
             DIR2_SetHigh();
         else
             DIR2_SetLow();
@@ -244,13 +250,15 @@ void I2C_StatusCallback(I2C_SLAVE_DRIVER_STATUS i2c_bus_state)
                         case I2C_FUNC_TIME:
                             TMR1_ChangeTicker(data);
                             break;
-                        case I2C_FUNC_MOTOR:
-                            motorPwm = data;
-                            I2C_updateValues();
-                            break;
                         case I2C_FUNC_ENCODER:
                             if(data < 2)
                                 motorEncoder = data;
+                            break;
+                        case I2C_FUNC_MOTOR:
+                            motorPwm = data;
+                            activateMotor = true;
+                        default:
+                            I2C_updateValues();
                             break;
                     }
                     break;
