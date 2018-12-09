@@ -51,7 +51,8 @@
 #include "stdbool.h"
 #include "../config.h"
 
-
+signed long encoder1 = 0;
+signed long encoder2 = 0;
 
 void (*IOCAF4_InterruptHandler)(void);
 void (*IOCAF5_InterruptHandler)(void);
@@ -161,12 +162,6 @@ void PIN_MANAGER_IOC(void)
     }	
 }
 
-
-unsigned long A1 = 0;
-unsigned long A2 = 0;
-unsigned long B1 = 0;
-unsigned long B2 = 0;
-uint16_t encoderV = 0;
 /**
    IOCAF4 Interrupt Service Routine
 */
@@ -195,8 +190,7 @@ void IOCAF4_SetInterruptHandler(void (* InterruptHandler)(void)){
 void IOCAF4_DefaultInterruptHandler(void){
     // add your IOCAF4 interrupt custom code
     // or set custom function using IOCAF4_SetInterruptHandler()
-    A1++;
-    encoderV++;
+    B1_GetValue()?encoder1--:encoder1++;
 }
 
 /**
@@ -227,7 +221,7 @@ void IOCAF5_SetInterruptHandler(void (* InterruptHandler)(void)){
 void IOCAF5_DefaultInterruptHandler(void){
     // add your IOCAF5 interrupt custom code
     // or set custom function using IOCAF5_SetInterruptHandler()
-    B1++;
+    A1_GetValue()?encoder1--:encoder1++;
 }
 
 /**
@@ -258,7 +252,7 @@ void IOCBF5_SetInterruptHandler(void (* InterruptHandler)(void)){
 void IOCBF5_DefaultInterruptHandler(void){
     // add your IOCBF5 interrupt custom code
     // or set custom function using IOCBF5_SetInterruptHandler()
-    A2++;
+    B2_GetValue()?encoder2--:encoder2++;
 }
 
 /**
@@ -289,7 +283,7 @@ void IOCBF7_SetInterruptHandler(void (* InterruptHandler)(void)){
 void IOCBF7_DefaultInterruptHandler(void){
     // add your IOCBF7 interrupt custom code
     // or set custom function using IOCBF7_SetInterruptHandler()
-    B2++;
+    A2_GetValue()?encoder2--:encoder2++;
 }
 
 /**

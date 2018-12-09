@@ -46,12 +46,28 @@ extern uint8_t motorDir;
 extern uint8_t motorEncoder;
 extern bool activateMotor;
 
-extern unsigned long A1;
-extern unsigned long A2;
-extern unsigned long B1;
-extern unsigned long B2;
-extern uint8_t encoderAdd;
-extern uint16_t encoderV;
+extern signed long encoder1;
+extern signed long encoder2;
+extern uint8_t bitReading;
+
+/*extern unsigned A1;
+extern unsigned A2;
+extern unsigned B1;
+extern unsigned B2;
+extern unsigned encoderAdd;
+
+struct encoder_state{
+    unsigned A;
+    unsigned B;
+};
+extern encoder_state enc_state[4];
+
+void check_state(unsigned A, unsigned B){
+    for(int i = 0; i < 4; ++i){
+        if(enc_state[i].A == A && enc_state[i].B == B)
+            return i;
+    }
+}*/
 
 // TODO Insert appropriate #include <>
 

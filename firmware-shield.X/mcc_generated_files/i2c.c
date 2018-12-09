@@ -173,7 +173,7 @@ uint8_t motorCurrent = 0;
 uint8_t motorPwm = 0;
 uint8_t motorDir = 0;
 uint8_t motorEncoder = 0;
-uint8_t encoderAdd = 0;
+uint8_t bitReading = 0;
 bool activateMotor = false;
 
 void I2C_updateValues(){
@@ -270,21 +270,20 @@ void I2C_StatusCallback(I2C_SLAVE_DRIVER_STATUS i2c_bus_state)
             break;
 
         case I2C_SLAVE_READ_REQUEST:
-            if(encoderAdd > 0)
-                dataR = (encoderV >> 8) & 0x00ff;
-            else
-                dataR = (uint8_t)encoderV;
                 
             switch(motorEncoder){
+                default:
                 case 0:
+                    dataR = (uint8_t)((encoder1&(0xFF<<bitReading*8))>>bitReading*8);
                     SSP1BUF = dataR;
                     break;
                 case 1:
+                    dataR = (uint8_t)((encoder2&(0xFF<<bitReading*8))>>bitReading*8);
                     SSP1BUF = dataR;
                     break;
             }
-            encoderAdd++;
-            encoderAdd%=2;
+            bitReading++;
+            bitReading%=4;
             break;
 
         case I2C_SLAVE_READ_COMPLETED:

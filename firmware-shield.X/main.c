@@ -44,6 +44,13 @@
 #include "mcc_generated_files/mcc.h"
 #include "config.h"
 
+/*unsigned A1 = 0;
+unsigned A2 = 0;
+unsigned B1 = 0;
+unsigned B2 = 0;
+encoder_state enc_state[4]={{0,0},{1,0},{0,1},{1,1}};
+encoder_state* act_enc_state1 = enc_state;
+encoder_state* act_enc_state2 = enc_state;*/
 /*
                          Main application
  */
@@ -51,7 +58,15 @@ void main(void)
 {
     // initialize the device
     SYSTEM_Initialize();
-
+    
+    BONUS_SetHigh();
+    
+    /*A1 = A1_GetValue();
+    B1 = B1_GetValue();
+    A2 = A2_GetValue();
+    B2 = B2_GetValue();
+    act_enc_state1 = &(enc_state[check_state(A1, B1)]);
+    act_enc_state2 = &(enc_state[check_state(A2, B2)]);*/
     // When using interrupts, you need to set the Global and Peripheral Interrupt Enable bits
     // Use the following macros to:
 
@@ -68,8 +83,8 @@ void main(void)
     //INTERRUPT_PeripheralInterruptDisable();
     while (1)
     {
-        BONUS_Toggle();
-        __delay_ms(1000);
+        //BONUS_Toggle();
+        //__delay_ms(1000);
     }
 }
 /**
