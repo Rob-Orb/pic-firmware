@@ -240,6 +240,20 @@
 #define DIR2_SetAnalogMode()      do { ANSELCbits.ANSC6 = 1; } while(0)
 #define DIR2_SetDigitalMode()     do { ANSELCbits.ANSC6 = 0; } while(0)
 
+// get/set BONUS aliases
+#define BONUS_TRIS                 TRISCbits.TRISC7
+#define BONUS_LAT                  LATCbits.LATC7
+#define BONUS_PORT                 PORTCbits.RC7
+#define BONUS_ANS                  ANSELCbits.ANSC7
+#define BONUS_SetHigh()            do { LATCbits.LATC7 = 1; } while(0)
+#define BONUS_SetLow()             do { LATCbits.LATC7 = 0; } while(0)
+#define BONUS_Toggle()             do { LATCbits.LATC7 = ~LATCbits.LATC7; } while(0)
+#define BONUS_GetValue()           PORTCbits.RC7
+#define BONUS_SetDigitalInput()    do { TRISCbits.TRISC7 = 1; } while(0)
+#define BONUS_SetDigitalOutput()   do { TRISCbits.TRISC7 = 0; } while(0)
+#define BONUS_SetAnalogMode()      do { ANSELCbits.ANSC7 = 1; } while(0)
+#define BONUS_SetDigitalMode()     do { ANSELCbits.ANSC7 = 0; } while(0)
+
 /**
    @Param
     none

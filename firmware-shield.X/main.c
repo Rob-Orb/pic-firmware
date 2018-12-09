@@ -68,7 +68,8 @@ void main(void)
     //INTERRUPT_PeripheralInterruptDisable();
     while (1)
     {
-        
+        BONUS_Toggle();
+        __delay_ms(1000);
     }
 }
 /**

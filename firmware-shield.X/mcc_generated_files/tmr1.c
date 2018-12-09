@@ -203,8 +203,8 @@ void TMR1_DefaultInterruptHandler(void){
     // or set custom function using TMR1_SetInterruptHandler()
     PWM1_LoadDutyValue(0);
     PWM2_LoadDutyValue(0);
-    EN1_SetHigh();
-    EN2_SetHigh();
+    //EN1_SetHigh();
+    //EN2_SetHigh();
 }
 
 /**
