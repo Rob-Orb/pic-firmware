@@ -53,10 +53,12 @@
 #include "pwm1.h"
 #include "pwm2.h"
 #include "pin_manager.h"
+#include "../config.h"
 /**
   Section: Global Variables Definitions
 */
 volatile uint16_t timer1ReloadVal;
+unsigned int CountCallBack = 0;
 void (*TMR1_InterruptHandler)(void);
 
 /**
@@ -146,7 +148,6 @@ uint8_t ticker_factor = TMR1_INTERRUPT_TICKER_FACTOR;
 void TMR1_Reload(void)
 {
     TMR1_WriteTimer(timer1ReloadVal);
-    static volatile unsigned int CountCallBack = 0;
     CountCallBack = 0;
 }
 
@@ -162,13 +163,10 @@ uint8_t TMR1_CheckGateValueStatus(void)
 
 void TMR1_ChangeTicker(uint8_t val){
     ticker_factor = val;
-    static volatile unsigned int CountCallBack = 0;
     CountCallBack = 0;
 }
 void TMR1_ISR(void)
 {
-    static volatile unsigned int CountCallBack = 0;
-
     // Clear the TMR1 interrupt flag
     PIR1bits.TMR1IF = 0;
     TMR1_WriteTimer(timer1ReloadVal);
@@ -201,10 +199,10 @@ void TMR1_SetInterruptHandler(void (* InterruptHandler)(void)){
 void TMR1_DefaultInterruptHandler(void){
     // add your TMR1 interrupt custom code
     // or set custom function using TMR1_SetInterruptHandler()
-    PWM1_LoadDutyValue(0);
     PWM2_LoadDutyValue(0);
-    //EN1_SetHigh();
-    //EN2_SetHigh();
+    EN2_SetHigh();
+    state2 = STATE_TIMEOUT;
+    activateControl &= 0xFA;
 }
 
 /**

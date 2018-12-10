@@ -35,19 +35,44 @@
 
 //#include <xc.h> // include processor files - each processor file is guarded.
 
+#define sign(a)     a>=0?1:-1
+
 #define I2C_FUNC_TIME    0x01
 #define I2C_FUNC_MOTOR     0x02
-#define I2C_FUNC_ENCODER     0x03
+#define I2C_FUNC_READ     0x03
+#define I2C_FUNC_CONTROL_POS     0x04
+#define I2C_FUNC_CONTROL_SPEED     0x05
+#define I2C_FUNC_CONTROL_CONF     0x06
+
+#define I2C_RFUNC_ENCODER   0x00
+#define I2C_RFUNC_STATE   0x01
+
+#define STATE_MOVING    0x01
+#define STATE_STOPPED    0x00
+#define STATE_TIMEOUT    0x02
 
 
 extern uint8_t motorCurrent;
 extern uint8_t motorPwm;
 extern uint8_t motorDir;
-extern uint8_t motorEncoder;
 extern bool activateMotor;
+
+extern uint8_t readData;
+
+extern uint8_t activateControl;
+extern uint8_t input1;
+extern uint8_t input2;
+
+extern uint8_t P;
+extern uint8_t I;
+extern uint8_t D;
 
 extern signed long encoder1;
 extern signed long encoder2;
+extern signed long curencoder1;
+extern signed long curencoder2;
+extern uint8_t state1;
+extern uint8_t state2;
 extern uint8_t bitReading;
 
 /*extern unsigned A1;

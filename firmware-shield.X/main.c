@@ -54,6 +54,8 @@ encoder_state* act_enc_state2 = enc_state;*/
 /*
                          Main application
  */
+uint8_t P = 100;
+
 void main(void)
 {
     // initialize the device
@@ -81,10 +83,65 @@ void main(void)
 
     // Disable the Peripheral Interrupts
     //INTERRUPT_PeripheralInterruptDisable();
+    uint8_t counting = 0;
+    
+    long preverror1 = 0;
+    long preverror2 = 0;
+    long cumerror1 = 0;
+    long cumerror2 = 0;
     while (1)
     {
-        //BONUS_Toggle();
-        //__delay_ms(1000);
+        if(activateControl > 0){
+            long error1 = input1 - (encoder1 - curencoder1);
+            long error2 = input2 - (encoder2 - curencoder2);
+            long derror1 = (error1 - preverror1)/0.01;
+            long derror2 = (error2 - preverror2)/0.01;
+            long ierror1 = abs(cumerror1*0.01)>1000?sign(cumerror1)*1000:(cumerror1*0.01);
+            long ierror2 = abs(cumerror2*0.01)>1000?sign(cumerror2)*1000:(cumerror2*0.01);
+            
+            preverror1 = error1;
+            preverror2 = error2;
+            cumerror1 += error1;
+            cumerror2 += error2;
+            if((activateControl&0x03) > 0){
+                switch(activateControl&0x03){
+                    case 1:
+                        PWM1_LoadDutyValue(P/255.0*error1/* + D/255.0*derror1 + I/255.0*ierror1*/);
+                        break;
+                    case 2:
+                        PWM2_LoadDutyValue(P/255.0*error2/* + D/255.0*derror2 + I/255.0*ierror2*/);
+                        break;
+                    case 3:
+                        PWM1_LoadDutyValue(P/255.0*error1/* + D/255.0*derror1 + I/255.0*ierror1*/);
+                        PWM2_LoadDutyValue(P/255.0*error2/* + D/255.0*derror2 + I/255.0*ierror2*/);
+                        break;
+                    default:
+                        break;
+                }
+            }
+            if((activateControl&0x0C) > 0){
+                switch(activateControl&0x0C){
+                    case 1:
+                        PWM1_LoadDutyValue(P/255.0*error1);
+                        break;
+                    case 2:
+                        PWM2_LoadDutyValue(P/255.0*error2);
+                        break;
+                    case 3:
+                        PWM1_LoadDutyValue(P/255.0*error1);
+                        PWM2_LoadDutyValue(P/255.0*error2);
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+        if(counting > 9){
+            BONUS_Toggle();
+            counting = 0;
+        }
+        __delay_ms(10);
+        counting ++;
     }
 }
 /**

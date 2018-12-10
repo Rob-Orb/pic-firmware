@@ -61,6 +61,7 @@
 #endif
         
         
+extern unsigned int CountCallBack;
 extern uint8_t ticker_factor;
 #define TMR1_INTERRUPT_TICKER_FACTOR    10
 
