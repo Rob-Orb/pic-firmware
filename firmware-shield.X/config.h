@@ -50,6 +50,7 @@
 #define STATE_MOVING    0x01
 #define STATE_STOPPED    0x00
 #define STATE_TIMEOUT    0x02
+#define STATE_ACHIEVED    0x03
 
 
 extern uint8_t motorCurrent;

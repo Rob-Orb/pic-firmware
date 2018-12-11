@@ -144,11 +144,12 @@ void TMR1_WriteTimer(uint16_t timerVal)
     
 }
 
-uint8_t ticker_factor = TMR1_INTERRUPT_TICKER_FACTOR;
+uint8_t ticker_factor = 1;
 void TMR1_Reload(void)
 {
     TMR1_WriteTimer(timer1ReloadVal);
     CountCallBack = 0;
+    PIE1bits.TMR1IE = 1;
 }
 
 void TMR1_StartSinglePulseAcquisition(void)
@@ -172,14 +173,14 @@ void TMR1_ISR(void)
     TMR1_WriteTimer(timer1ReloadVal);
 
     // callback function - called every 10th pass
-    if (++CountCallBack >= ticker_factor)
+    if (++CountCallBack >= ticker_factor/10.0*TMR1_INTERRUPT_TICKER_FACTOR)
     {
         // ticker function call
         TMR1_CallBack();
 
         // reset ticker counter
         CountCallBack = 0;
-        ticker_factor = TMR1_INTERRUPT_TICKER_FACTOR;
+        ticker_factor = 10;
     }
 }
 
@@ -201,8 +202,10 @@ void TMR1_DefaultInterruptHandler(void){
     // or set custom function using TMR1_SetInterruptHandler()
     PWM2_LoadDutyValue(0);
     EN2_SetHigh();
-    state2 = STATE_TIMEOUT;
     activateControl &= 0xFA;
+    state2 = STATE_TIMEOUT;
+    
+    PIE1bits.TMR1IE = 0;
 }
 
 /**

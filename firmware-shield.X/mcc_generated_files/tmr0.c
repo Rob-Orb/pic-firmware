@@ -104,12 +104,13 @@ void TMR0_WriteTimer(uint8_t timerVal)
     TMR0 = timerVal;
 }
 
-uint8_t ticker_factor0 = TMR0_INTERRUPT_TICKER_FACTOR;
+uint8_t ticker_factor0 = 1;
 void TMR0_Reload(void)
 {
     // Write to the Timer0 register
     TMR0 = timer0ReloadVal;
     CountCallBack0 = 0;
+    INTCONbits.TMR0IE = 1;
 }
 
 void TMR0_ChangeTicker(uint8_t val){
@@ -125,14 +126,14 @@ void TMR0_ISR(void)
     TMR0 = timer0ReloadVal;
 
     // callback function - called every 250th pass
-    if (++CountCallBack0 >= ticker_factor0)
+    if (++CountCallBack0 >= ticker_factor0/10.0*TMR0_INTERRUPT_TICKER_FACTOR)
     {
         // ticker function call
         TMR0_CallBack();
 
         // reset ticker counter
         CountCallBack0 = 0;
-        ticker_factor0 = TMR0_INTERRUPT_TICKER_FACTOR;
+        ticker_factor0 = 10;
     }
 
     // add your TMR0 interrupt custom code
@@ -157,8 +158,10 @@ void TMR0_DefaultInterruptHandler(void){
     // or set custom function using TMR0_SetInterruptHandler()
     PWM1_LoadDutyValue(0);
     EN1_SetHigh();
-    state1 = STATE_TIMEOUT;
     activateControl &= 0xF5;
+    state1 = STATE_TIMEOUT;
+    
+    INTCONbits.TMR0IE = 0;
 }
 
 /**

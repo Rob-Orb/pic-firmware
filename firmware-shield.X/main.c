@@ -54,7 +54,7 @@ encoder_state* act_enc_state2 = enc_state;*/
 /*
                          Main application
  */
-uint8_t P = 100;
+uint8_t P = 75;
 
 void main(void)
 {
@@ -92,8 +92,8 @@ void main(void)
     while (1)
     {
         if(activateControl > 0){
-            long error1 = input1 - (encoder1 - curencoder1);
-            long error2 = input2 - (encoder2 - curencoder2);
+            long error1 = input1*4 - (encoder1 - curencoder1);
+            long error2 = input2*4 - (encoder2 - curencoder2);
             long derror1 = (error1 - preverror1)/0.01;
             long derror2 = (error2 - preverror2)/0.01;
             long ierror1 = abs(cumerror1*0.01)>1000?sign(cumerror1)*1000:(cumerror1*0.01);
@@ -106,20 +106,30 @@ void main(void)
             if((activateControl&0x03) > 0){
                 switch(activateControl&0x03){
                     case 1:
-                        PWM1_LoadDutyValue(P/255.0*error1/* + D/255.0*derror1 + I/255.0*ierror1*/);
+                        PWM1_LoadDutyValue(P/125.0*error1/* + D/255.0*derror1 + I/255.0*ierror1*/);
+                        if(error1 < 20)
+                            state1 = STATE_ACHIEVED;
                         break;
                     case 2:
-                        PWM2_LoadDutyValue(P/255.0*error2/* + D/255.0*derror2 + I/255.0*ierror2*/);
+                        PWM2_LoadDutyValue(P/125.0*error2/* + D/255.0*derror2 + I/255.0*ierror2*/);
+                        if(error2 < 20)
+                            state2 = STATE_ACHIEVED;
                         break;
                     case 3:
-                        PWM1_LoadDutyValue(P/255.0*error1/* + D/255.0*derror1 + I/255.0*ierror1*/);
-                        PWM2_LoadDutyValue(P/255.0*error2/* + D/255.0*derror2 + I/255.0*ierror2*/);
+                        PWM1_LoadDutyValue(P/125.0*error1/* + D/255.0*derror1 + I/255.0*ierror1*/);
+                        PWM2_LoadDutyValue(P/125.0*error2/* + D/255.0*derror2 + I/255.0*ierror2*/);
+                        if(error1 < 20)
+                            state1 = STATE_ACHIEVED;
+                        if(error2 < 20)
+                            state2 = STATE_ACHIEVED;
                         break;
                     default:
                         break;
                 }
             }
-            if((activateControl&0x0C) > 0){
+            
+            //Speed control
+            /*if((activateControl&0x0C) > 0){
                 switch(activateControl&0x0C){
                     case 1:
                         PWM1_LoadDutyValue(P/255.0*error1);
@@ -134,7 +144,7 @@ void main(void)
                     default:
                         break;
                 }
-            }
+            }*/
         }
         if(counting > 9){
             BONUS_Toggle();

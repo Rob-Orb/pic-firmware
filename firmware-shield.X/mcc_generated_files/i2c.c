@@ -193,9 +193,9 @@ uint8_t bitReading = 0;
 void I2C_updateValues(){
     switch(motorCurrent){
         case 1:
-            activateControl &= 0xF5;
+            activateControl &= 0xF5; // Removing Speed and Position control to motor 1
             if(activateMotor){
-                PWM1_LoadDutyValue(motorPwm*3);
+                PWM1_LoadDutyValue(motorPwm*4);
                 state1 = STATE_MOVING;
                 TMR0_Reload();
             }
@@ -205,9 +205,9 @@ void I2C_updateValues(){
             EN1_SetLow();
             break;
         case 2:
-            activateControl &= 0xFA;
+            activateControl &= 0xFA; // Removing Speed and Position control to motor 2
             if(activateMotor){
-                PWM2_LoadDutyValue(motorPwm*3);
+                PWM2_LoadDutyValue(motorPwm*4);
                 state2 = STATE_MOVING;
                 TMR1_Reload();
             }
@@ -220,10 +220,10 @@ void I2C_updateValues(){
             break;
         case 3:
         default:
-            activateControl = 0;
+            activateControl = 0; // Removing Speed and Position control
             if(activateMotor){
-                PWM1_LoadDutyValue(motorPwm*3);
-                PWM2_LoadDutyValue(motorPwm*3);
+                PWM1_LoadDutyValue(motorPwm*4);
+                PWM2_LoadDutyValue(motorPwm*4);
                 state1 = STATE_MOVING;
                 state2 = STATE_MOVING;
                 TMR0_Reload();
@@ -336,11 +336,13 @@ void I2C_StatusCallback(I2C_SLAVE_DRIVER_STATUS i2c_bus_state)
                             break;
                         case I2C_FUNC_CONTROL_POS:
                             activateControl &= 0xF3; //Removing Speed control
+                            I2C_updateValues();
                             I2C_Control(motorCurrent,data);
                             activateControl |= motorCurrent; //Adding Position control
                             break;
                         case I2C_FUNC_CONTROL_SPEED:
                             activateControl &= 0xFC; //Removing Position control
+                            I2C_updateValues();
                             I2C_Control(motorCurrent,data);
                             activateControl |= motorCurrent << 2; //Adding Speed control
                             break;
