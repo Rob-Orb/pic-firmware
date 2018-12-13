@@ -4,6 +4,13 @@
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
             <file>file:/C:/Users/uvautier/MPLABXProjects/toshiba-firmware.X/main.c</file>
+            <file>file:/C:/Users/uvautier/MPLABXProjects/toshiba-firmware.X/mcc_generated_files/i2c.c</file>
+            <file>file:/C:/Users/uvautier/MPLABXProjects/toshiba-firmware.X/mcc_generated_files/tmr1.c</file>
+            <file>file:/C:/Users/uvautier/MPLABXProjects/toshiba-firmware.X/mcc_generated_files/tmr3.c</file>
+            <file>file:/C:/Users/uvautier/MPLABXProjects/toshiba-firmware.X/mcc_generated_files/pin_manager.h</file>
+            <file>file:/C:/Users/uvautier/MPLABXProjects/toshiba-firmware.X/mcc_generated_files/tmr4.c</file>
+            <file>file:/C:/Users/uvautier/MPLABXProjects/toshiba-firmware.X/mcc_generated_files/tmr5.c</file>
+            <file>file:/C:/Users/uvautier/MPLABXProjects/toshiba-firmware.X/config.h</file>
         </group>
     </open-files>
 </project-private>

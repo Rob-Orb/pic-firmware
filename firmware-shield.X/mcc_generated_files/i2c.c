@@ -300,9 +300,6 @@ void I2C_StatusCallback(I2C_SLAVE_DRIVER_STATUS i2c_bus_state)
 
                 case SLAVE_NORMAL_DATA:
                 default:
-                    
-                    PIR1bits.TMR1IF = 0;
-                    TMR1_Reload();
                     // the master has written data to store in the eeprom
                     data    = I2C_slaveWriteData;
                     motorCurrent = funcAddress & 0x03;

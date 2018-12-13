@@ -49,6 +49,12 @@
 #include <xc.h>
 #include "pin_manager.h"
 #include "stdbool.h"
+#include "../config.h"
+
+signed long encoder1 = 0;
+signed long encoder2 = 0;
+signed long encoder3 = 0;
+signed long encoder4 = 0;
 
 
 
@@ -271,6 +277,7 @@ void IOCAF4_SetInterruptHandler(void (* InterruptHandler)(void)){
 void IOCAF4_DefaultInterruptHandler(void){
     // add your IOCAF4 interrupt custom code
     // or set custom function using IOCAF4_SetInterruptHandler()
+    B1_GetValue()?encoder1--:encoder1++;
 }
 
 /**
@@ -301,6 +308,7 @@ void IOCAF5_SetInterruptHandler(void (* InterruptHandler)(void)){
 void IOCAF5_DefaultInterruptHandler(void){
     // add your IOCAF5 interrupt custom code
     // or set custom function using IOCAF5_SetInterruptHandler()
+    A1_GetValue()?encoder1--:encoder1++;
 }
 
 /**
@@ -331,6 +339,7 @@ void IOCAF6_SetInterruptHandler(void (* InterruptHandler)(void)){
 void IOCAF6_DefaultInterruptHandler(void){
     // add your IOCAF6 interrupt custom code
     // or set custom function using IOCAF6_SetInterruptHandler()
+    B2_GetValue()?encoder2--:encoder2++;
 }
 
 /**
@@ -361,6 +370,7 @@ void IOCAF7_SetInterruptHandler(void (* InterruptHandler)(void)){
 void IOCAF7_DefaultInterruptHandler(void){
     // add your IOCAF7 interrupt custom code
     // or set custom function using IOCAF7_SetInterruptHandler()
+    A2_GetValue()?encoder2--:encoder2++;
 }
 
 /**
@@ -391,6 +401,7 @@ void IOCBF0_SetInterruptHandler(void (* InterruptHandler)(void)){
 void IOCBF0_DefaultInterruptHandler(void){
     // add your IOCBF0 interrupt custom code
     // or set custom function using IOCBF0_SetInterruptHandler()
+    B3_GetValue()?encoder3--:encoder3++;
 }
 
 /**
@@ -421,6 +432,7 @@ void IOCBF1_SetInterruptHandler(void (* InterruptHandler)(void)){
 void IOCBF1_DefaultInterruptHandler(void){
     // add your IOCBF1 interrupt custom code
     // or set custom function using IOCBF1_SetInterruptHandler()
+    A3_GetValue()?encoder3--:encoder3++;
 }
 
 /**
@@ -451,6 +463,7 @@ void IOCBF2_SetInterruptHandler(void (* InterruptHandler)(void)){
 void IOCBF2_DefaultInterruptHandler(void){
     // add your IOCBF2 interrupt custom code
     // or set custom function using IOCBF2_SetInterruptHandler()
+    B4_GetValue()?encoder4--:encoder4++;
 }
 
 /**
@@ -481,6 +494,7 @@ void IOCBF3_SetInterruptHandler(void (* InterruptHandler)(void)){
 void IOCBF3_DefaultInterruptHandler(void){
     // add your IOCBF3 interrupt custom code
     // or set custom function using IOCBF3_SetInterruptHandler()
+    A4_GetValue()?encoder4--:encoder4++;
 }
 
 /**

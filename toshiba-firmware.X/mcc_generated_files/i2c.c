@@ -46,6 +46,16 @@
 */
 
 #include "i2c.h"
+#include "../config.h"
+#include "pin_manager.h"
+#include "pwm3.h"
+#include "pwm4.h"
+#include "pwm9.h"
+#include "pwm10.h"
+#include "tmr1.h"
+#include "tmr3.h"
+#include "tmr4.h"
+#include "tmr5.h"
 
 #define I2C_SLAVE_ADDRESS 0x0A 
 #define I2C_SLAVE_MASK    0x7F
@@ -164,24 +174,165 @@ void I2C_ISR ( void )
     When the end of the EEPROM is reached, the EEPROM address will
     continue from the start of the EEPROM.
 */
+uint8_t motorCurrent = 0;
+uint8_t motorPwm = 0;
+uint8_t motorDir = 0;
+
+bool activateMotor = false;
+
+uint8_t readData = 0;
+
+uint8_t activateControl = 0;
+uint8_t input1 = 0;
+uint8_t input2 = 0;
+uint8_t input3 = 0;
+uint8_t input4 = 0;
+
+uint8_t state1 = 0;
+uint8_t state2 = 0;
+uint8_t state3 = 0;
+uint8_t state4 = 0;
+
+long curencoder1 = 0;
+long curencoder2 = 0;
+long curencoder3 = 0;
+long curencoder4 = 0;
+
+uint8_t bitReading = 0;
+
+void I2C_updateValues(){
+    switch(motorCurrent){
+        case 0:
+            activateControl &= 0xF5; // Removing Speed and Position control to motor 1
+            if(activateMotor){
+                PWM3_LoadDutyValue(motorPwm*4);
+                state1 = STATE_MOVING;
+                TMR1_Reload();
+            }
+            
+            if((motorDir >> 1) > 0){
+                do { LATDbits.LATD0 = (motorDir & 0x01); } while(0);
+                do { LATDbits.LATD1 = ~(motorDir & 0x01); } while(0);
+            }
+            EN1_SetHigh();
+            break;
+        case 1:
+            activateControl &= 0xFA; // Removing Speed and Position control to motor 2
+            if(activateMotor){
+                PWM4_LoadDutyValue(motorPwm*4);
+                state2 = STATE_MOVING;
+                TMR3_Reload();
+            }
+            
+            if((motorDir >> 1) > 0){
+                do { LATDbits.LATD2 = (motorDir & 0x01); } while(0);
+                do { LATDbits.LATD3 = ~(motorDir & 0x01); } while(0);
+            }
+            EN1_SetHigh();
+            break;
+        case 2:
+            activateControl &= 0xFA; // Removing Speed and Position control to motor 2
+            if(activateMotor){
+                PWM9_LoadDutyValue(motorPwm*4);
+                state3 = STATE_MOVING;
+                TMR4_Reload();
+            }
+            
+            if((motorDir >> 1) > 0){
+                do { LATDbits.LATD4 = (motorDir & 0x01); } while(0);
+                do { LATDbits.LATD5 = ~(motorDir & 0x01); } while(0);
+            }
+            EN2_SetHigh();
+            break;
+        case 3:
+            activateControl &= 0xFA; // Removing Speed and Position control to motor 2
+            if(activateMotor){
+                PWM10_LoadDutyValue(motorPwm*4);
+                state4 = STATE_MOVING;
+                TMR5_Reload();
+            }
+            
+            if((motorDir >> 1) > 0){
+                do { LATDbits.LATD6 = (motorDir & 0x01); } while(0);
+                do { LATDbits.LATD7 = ~(motorDir & 0x01); } while(0);
+            }
+            EN2_SetHigh();
+            break;
+        //case 0:
+        default:
+            activateControl = 0; // Removing Speed and Position control
+            if(activateMotor){
+                PWM3_LoadDutyValue(motorPwm*4);
+                PWM4_LoadDutyValue(motorPwm*4);
+                PWM9_LoadDutyValue(motorPwm*4);
+                PWM10_LoadDutyValue(motorPwm*4);
+                state1 = STATE_MOVING;
+                state2 = STATE_MOVING;
+                state3 = STATE_MOVING;
+                state4 = STATE_MOVING;
+                TMR1_Reload();
+                TMR3_Reload();
+                TMR4_Reload();
+                TMR5_Reload();
+            }
+            
+            if((motorDir >> 1) > 0){
+                do { LATDbits.LATD0 = (motorDir & 0x01); } while(0);
+                do { LATDbits.LATD1 = ~(motorDir & 0x01); } while(0);
+                do { LATDbits.LATD2 = (motorDir & 0x01); } while(0);
+                do { LATDbits.LATD3 = ~(motorDir & 0x01); } while(0);
+                do { LATDbits.LATD4 = (motorDir & 0x01); } while(0);
+                do { LATDbits.LATD5 = ~(motorDir & 0x01); } while(0);
+                do { LATDbits.LATD6 = (motorDir & 0x01); } while(0);
+                do { LATDbits.LATD7 = ~(motorDir & 0x01); } while(0);
+            }
+            EN1_SetHigh();
+            EN2_SetHigh();
+            break;
+    }
+    activateMotor = false;
+}
+
+void I2C_Control(uint8_t currentMotor, uint8_t data){
+    switch(currentMotor){
+        case 1:
+            input1 = data;
+            curencoder1 = encoder1;
+            state1 = STATE_MOVING;
+            TMR0_Reload();
+            break;
+        case 2:
+            input2 = data;
+            curencoder2 = encoder2;
+            state2 = STATE_MOVING;
+            TMR1_Reload();
+            break;
+        case 0:
+            break;
+        case 3:
+        default:
+            input1 = data;
+            input2 = data;
+            curencoder1 = encoder1;
+            curencoder2 = encoder2;
+            state1 = STATE_MOVING;
+            state2 = STATE_MOVING;
+            TMR1_Reload();
+            TMR0_Reload();
+            break;
+    }
+}
 
 void I2C_StatusCallback(I2C_SLAVE_DRIVER_STATUS i2c_bus_state)
 {
-    static uint8_t EEPROM_Buffer[] =
-    {
-        0x00,0x01,0x02,0x03,0x04,0x05,0x06,0x07,0x08,0x09,0x0a,0x0b,0x0c,0x0d,0x0e,0x0f,
-        0x10,0x11,0x12,0x13,0x14,0x15,0x16,0x17,0x18,0x19,0x1a,0x1b,0x1c,0x1d,0x1e,0x1f,
-        0x20,0x21,0x22,0x23,0x24,0x25,0x26,0x27,0x28,0x29,0x2a,0x2b,0x2c,0x2d,0x2e,0x2f,
-        0x30,0x31,0x32,0x33,0x34,0x35,0x36,0x37,0x38,0x39,0x3a,0x3b,0x3c,0x3d,0x3e,0x3f,
-        0x40,0x41,0x42,0x43,0x44,0x45,0x46,0x47,0x48,0x49,0x4a,0x4b,0x4c,0x4d,0x4e,0x4f,
-        0x50,0x51,0x52,0x53,0x54,0x55,0x56,0x57,0x58,0x59,0x5a,0x5b,0x5c,0x5d,0x5e,0x5f,
-        0x60,0x61,0x62,0x63,0x64,0x65,0x66,0x67,0x68,0x69,0x6a,0x6b,0x6c,0x6d,0x6e,0x6f,
-        0x70,0x71,0x72,0x73,0x74,0x75,0x76,0x77,0x78,0x79,0x7a,0x7b,0x7c,0x7d,0x7e,0x7f
-    };
 
-    static uint8_t eepromAddress    = 0;
+    static uint8_t funcAddress    = 0;
     static uint8_t slaveWriteType   = SLAVE_NORMAL_DATA;
 
+    uint8_t data = 0;
+    uint8_t dataR = 0;
+
+    uint8_t rFunction = 0;
 
     switch (i2c_bus_state)
     {
@@ -196,30 +347,111 @@ void I2C_StatusCallback(I2C_SLAVE_DRIVER_STATUS i2c_bus_state)
             switch(slaveWriteType)
             {
                 case SLAVE_DATA_ADDRESS:
-                    eepromAddress   = I2C_slaveWriteData;
+                    funcAddress   = I2C_slaveWriteData;
                     break;
 
 
                 case SLAVE_NORMAL_DATA:
                 default:
                     // the master has written data to store in the eeprom
-                    EEPROM_Buffer[eepromAddress++]    = I2C_slaveWriteData;
-                    if(sizeof(EEPROM_Buffer) <= eepromAddress)
-                    {
-                        eepromAddress = 0;    // wrap to start of eeprom page
+                    data    = I2C_slaveWriteData;
+                    motorCurrent = funcAddress & 0x03;
+                    motorDir = (funcAddress & 0x0C) >> 2;
+                    switch((funcAddress & 0xF0) >> 4){
+                        case I2C_FUNC_TIME:
+                            switch(motorCurrent){
+                                case 1:
+                                    TMR0_ChangeTicker(data);
+                                    break;
+                                case 2:
+                                    TMR1_ChangeTicker(data);
+                                    break;
+                                case 0:
+                                    break;
+                                case 3:
+                                default:
+                                    TMR0_ChangeTicker(data);
+                                    TMR1_ChangeTicker(data);
+                                    break;
+                            }
+                            break;
+                        case I2C_FUNC_READ:
+                            bitReading = 0;
+                            readData = data;
+                            break;
+                        case I2C_FUNC_MOTOR:
+                            motorPwm = data;
+                            activateMotor = true;
+                            I2C_updateValues();
+                            break;
+                        case I2C_FUNC_CONTROL_POS:
+                            activateControl &= 0xF3; //Removing Speed control
+                            I2C_updateValues();
+                            I2C_Control(motorCurrent,data);
+                            activateControl |= motorCurrent; //Adding Position control
+                            break;
+                        case I2C_FUNC_CONTROL_SPEED:
+                            activateControl &= 0xFC; //Removing Position control
+                            I2C_updateValues();
+                            I2C_Control(motorCurrent,data);
+                            activateControl |= motorCurrent << 2; //Adding Speed control
+                            break;
+                        case I2C_FUNC_CONTROL_CONF:
+                            break;
+                        default:
+                            I2C_updateValues();
+                            break;
                     }
                     break;
-
             } // end switch(slaveWriteType)
 
             slaveWriteType  = SLAVE_NORMAL_DATA;
             break;
 
         case I2C_SLAVE_READ_REQUEST:
-            SSP1BUF = EEPROM_Buffer[eepromAddress++];
-            if(sizeof(EEPROM_Buffer) <= eepromAddress)
-            {
-                eepromAddress = 0;    // wrap to start of eeprom page
+            rFunction = (readData&0xC0)>>6;
+            switch(rFunction){
+                case I2C_RFUNC_ENCODER:
+                    switch(motorCurrent){
+                    default:
+                    case 0:
+                        dataR = (uint8_t)((encoder1&(0xFF<<bitReading*8))>>bitReading*8);
+                        SSP1BUF = dataR;
+                        break;
+                    case 1:
+                        dataR = (uint8_t)((encoder2&(0xFF<<bitReading*8))>>bitReading*8);
+                        SSP1BUF = dataR;
+                        break;
+                    case 2:
+                        dataR = (uint8_t)((encoder3&(0xFF<<bitReading*8))>>bitReading*8);
+                        SSP1BUF = dataR;
+                        break;
+                    case 3:
+                        dataR = (uint8_t)((encoder4&(0xFF<<bitReading*8))>>bitReading*8);
+                        SSP1BUF = dataR;
+                        break;
+                }
+                bitReading++;
+                bitReading%=4;
+                break;
+                
+                case I2C_RFUNC_STATE:
+                    switch(motorCurrent){
+                    default:
+                    case 0:
+                        SSP1BUF = state1;
+                        break;
+                    case 1:
+                        SSP1BUF = state2;
+                        break;
+                    case 2:
+                        SSP1BUF = state3;
+                        break;
+                    case 3:
+                        SSP1BUF = state4;
+                        break;
+                }
+                break;
             }
             break;
 
