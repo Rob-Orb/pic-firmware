@@ -221,7 +221,7 @@ void IOCAF5_SetInterruptHandler(void (* InterruptHandler)(void)){
 void IOCAF5_DefaultInterruptHandler(void){
     // add your IOCAF5 interrupt custom code
     // or set custom function using IOCAF5_SetInterruptHandler()
-    A1_GetValue()?encoder1--:encoder1++;
+    A1_GetValue()?encoder1++:encoder1--;
 }
 
 /**
@@ -283,7 +283,7 @@ void IOCBF7_SetInterruptHandler(void (* InterruptHandler)(void)){
 void IOCBF7_DefaultInterruptHandler(void){
     // add your IOCBF7 interrupt custom code
     // or set custom function using IOCBF7_SetInterruptHandler()
-    A2_GetValue()?encoder2--:encoder2++;
+    A2_GetValue()?encoder2++:encoder2--;
 }
 
 /**

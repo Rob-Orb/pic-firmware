@@ -202,7 +202,7 @@ void TMR1_DefaultInterruptHandler(void){
     // or set custom function using TMR1_SetInterruptHandler()
     PWM2_LoadDutyValue(0);
     EN2_SetHigh();
-    activateControl &= 0xFA;
+    activateControl &= 0xF5;
     state2 = STATE_TIMEOUT;
     
     PIE1bits.TMR1IE = 0;

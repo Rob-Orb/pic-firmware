@@ -158,7 +158,7 @@ void TMR0_DefaultInterruptHandler(void){
     // or set custom function using TMR0_SetInterruptHandler()
     PWM1_LoadDutyValue(0);
     EN1_SetHigh();
-    activateControl &= 0xF5;
+    activateControl &= 0xFA;
     state1 = STATE_TIMEOUT;
     
     INTCONbits.TMR0IE = 0;
